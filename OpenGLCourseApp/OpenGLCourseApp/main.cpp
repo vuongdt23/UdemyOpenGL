@@ -14,6 +14,11 @@ float triOffset = 0.0f;
 float triMaxOffset = 0.7f;
 float triIncr = 0.0005f;
 float curAngle = 0.0f;
+
+bool sizeIncr = true;
+float curSize = 0.4;
+float maxSize = 0.8;
+float minSize = 0.1;
 //Vertex Shader
 static const char* vShader = "										\n\
 #version 330														\n\
@@ -23,7 +28,7 @@ uniform mat4 model	;												\n\
 																	\n\
 void main()															\n\
 {																	\n\
-	gl_Position = model* vec4(0.4 * pos.x , 0.4 * pos.y, 0.4 * pos.z, 1.0);	\n\
+	gl_Position = model* vec4(pos, 1.0);							\n\
 }";
 
 static const char* fShader = "						\n\
@@ -177,6 +182,13 @@ int main()
 		//Clear Window
 		glClearColor(1.0f, 0.3f, 0.7f, 0.9f);
 		glClear(GL_COLOR_BUFFER_BIT);
+		if (sizeIncr) curSize += 0.001;
+		else
+		{
+			curSize -= 0.001;
+		}
+
+		if (curSize >= maxSize or curSize< minSize) sizeIncr = !sizeIncr;
 
 		glUseProgram(shader);
 		curAngle += 0.01f;
@@ -185,6 +197,7 @@ int main()
 
 		model = glm::translate(model, glm::vec3(triOffset, 0, 0));
 		model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 0, 1));
+		model = glm::scale(model, glm::vec3(curSize, curSize, 1));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform1f(uniformXMove, triOffset);
 
