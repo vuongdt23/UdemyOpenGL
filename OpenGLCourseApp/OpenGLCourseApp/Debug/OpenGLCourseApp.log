@@ -1,7 +1,0 @@
-﻿  main.cpp
-c:\users\vuong\desktop\opengl\openglcourseapp\openglcourseapp\main.cpp(19): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\vuong\desktop\opengl\openglcourseapp\openglcourseapp\main.cpp(20): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\vuong\desktop\opengl\openglcourseapp\openglcourseapp\main.cpp(21): warning C4305: 'initializing': truncation from 'double' to 'float'
-c:\users\vuong\desktop\opengl\openglcourseapp\openglcourseapp\main.cpp(185): warning C4305: '+=': truncation from 'double' to 'float'
-c:\users\vuong\desktop\opengl\openglcourseapp\openglcourseapp\main.cpp(188): warning C4305: '-=': truncation from 'double' to 'float'
-  OpenGLCourseApp.vcxproj -> C:\Users\vuong\Desktop\OpenGL\OpenGLCourseApp\Debug\OpenGLCourseApp.exe
