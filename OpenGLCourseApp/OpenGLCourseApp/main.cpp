@@ -8,10 +8,12 @@
 #include <glm/gtc/type_ptr.hpp>
 const GLint WIDTH = 800, HEIGHT = 800;
 GLuint VAO, VBO, shader, uniformModel;
+const float toRad = 3.14159265f / 180.0f;
 bool direction = true;
 float triOffset = 0.0f;
 float triMaxOffset = 0.7f;
-float triIncr = 0.00005f;
+float triIncr = 0.0005f;
+float curAngle = 0.0f;
 //Vertex Shader
 static const char* vShader = "										\n\
 #version 330														\n\
@@ -177,10 +179,12 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT);
 
 		glUseProgram(shader);
-	
+		curAngle += 0.01f;
+		if (curAngle >= 360) curAngle = 0.0f;
 		glm::mat4 model;
 
 		model = glm::translate(model, glm::vec3(triOffset, 0, 0));
+		model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 0, 1));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform1f(uniformXMove, triOffset);
 
