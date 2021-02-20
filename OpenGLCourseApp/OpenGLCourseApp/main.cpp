@@ -24,21 +24,23 @@ static const char* vShader = "										\n\
 #version 330														\n\
 																	\n\
 layout (location = 0) in vec3 pos;									\n\
-uniform mat4 model	;												\n\
-																	\n\
+uniform mat4 model;													\n\
+out vec4 vCol;														\n\
 void main()															\n\
 {																	\n\
 	gl_Position = model* vec4(pos, 1.0);							\n\
-}";
+	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);						\n\
+}"; 
 
 static const char* fShader = "						\n\
 #version 330										\n\
-													\n\
+in vec4 vCol;										\n\
 out vec4 color;										\n\
 													\n\
 void main()											\n\
 {													\n\
-	color = vec4(1.0, 0.0, 0.0, 1.0);				\n\
+													\n\
+	color = vCol;									\n\
 }";
 void createTriangle()
 {
@@ -195,9 +197,9 @@ int main()
 		if (curAngle >= 360) curAngle = 0.0f;
 		glm::mat4 model;
 
-		model = glm::translate(model, glm::vec3(triOffset, 0, 0));
-		model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 0, 1));
-		model = glm::scale(model, glm::vec3(curSize, curSize, 1));
+		//model = glm::translate(model, glm::vec3(triOffset, 0, 0));
+		//model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 0, 1));
+		model = glm::scale(model, glm::vec3(0.4, 0.4, 1));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform1f(uniformXMove, triOffset);
 
