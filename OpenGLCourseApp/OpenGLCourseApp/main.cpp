@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 const GLint WIDTH = 800, HEIGHT = 800;
-GLuint VAO, VBO, shader, uniformModel;
+GLuint VAO, VBO, IBO, shader, uniformModel;
 const float toRad = 3.14159265f / 180.0f;
 bool direction = true;
 float triOffset = 0.0f;
@@ -44,23 +44,39 @@ void main()											\n\
 }";
 void createTriangle()
 {
+
+	unsigned int indices[] = {
+		0, 3, 1,
+		1, 3, 2,
+		2, 3, 0,
+		0, 1, 2
+	}
+	;
 	GLfloat vertices[] = {
-		-0.5f, -0.5f, 0.5f,
-		0.5f, -0.5f, 0.5f,
-		0.5f, 0.5f, 0.5f
+		-1.0f, -1.0f, 0.0f,
+		0.0f, -1.0f, 1.0f,
+		1.0f, -1.0f, 0.0f,
+		0.0f, 1.0f, 0.0f
 	};
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
 
 	glGenBuffers(1, &VBO);
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	
+	glGenBuffers(1, &IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 	glEnableVertexAttribArray(0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	 
 	glBindVertexArray(0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 }
 
 void AddShader(GLuint theProgram, const char* shaderCode, GLenum shaderType)
@@ -159,6 +175,7 @@ int main()
 		return 1;
 	}
 
+	glEnable(GL_DEPTH_TEST);
 	//Setup Viewport size
 
 	glViewport(0, 0, bufferWidth, bufferHeight);
@@ -182,8 +199,8 @@ int main()
 
 		if (abs(triOffset) >= triMaxOffset) direction = !direction;
 		//Clear Window
-		glClearColor(1.0f, 0.3f, 0.7f, 0.9f);
-		glClear(GL_COLOR_BUFFER_BIT);
+		glClearColor(0,0,0,1);
+		glClear(GL_COLOR_BUFFER_BIT| GL_DEPTH_BUFFER_BIT);
 		if (sizeIncr) curSize += 0.001;
 		else
 		{
@@ -198,14 +215,18 @@ int main()
 		glm::mat4 model;
 
 		//model = glm::translate(model, glm::vec3(triOffset, 0, 0));
-		//model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 0, 1));
+		model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 1, 0));
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 1));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
 		//glUniform1f(uniformXMove, triOffset);
 
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, IBO);
+
+		glDrawElements(GL_TRIANGLES, 12, GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
 
 		glUseProgram(0);
 
