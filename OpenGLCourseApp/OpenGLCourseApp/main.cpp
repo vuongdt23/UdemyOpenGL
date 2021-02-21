@@ -7,7 +7,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include <glm/gtc/type_ptr.hpp>
 const GLint WIDTH = 800, HEIGHT = 800;
-GLuint VAO, VBO, IBO, shader, uniformModel;
+GLuint VAO, VBO, IBO, shader, uniformModel, uniformProjection;
 const float toRad = 3.14159265f / 180.0f;
 bool direction = true;
 float triOffset = 0.0f;
@@ -25,10 +25,11 @@ static const char* vShader = "										\n\
 																	\n\
 layout (location = 0) in vec3 pos;									\n\
 uniform mat4 model;													\n\
+uniform mat4 projection;											\n\
 out vec4 vCol;														\n\
 void main()															\n\
 {																	\n\
-	gl_Position = model* vec4(pos, 1.0);							\n\
+	gl_Position = projection * model* vec4(pos, 1.0);				\n\
 	vCol = vec4(clamp(pos, 0.0f, 1.0f), 1.0f);						\n\
 }"; 
 
@@ -132,6 +133,8 @@ void CompileShader()
 		return;
 	}
 	uniformModel = glGetUniformLocation(shader, "model");
+	uniformProjection = glGetUniformLocation(shader, "projection");
+
 }
 int main()
 {
@@ -182,6 +185,8 @@ int main()
 	createTriangle();
 	CompileShader();
 
+
+	glm::mat4 projection = glm::perspective(45.0f, (GLfloat)bufferWidth / (GLfloat)bufferHeight, 0.1f, 100.0f);
 	//loop
 
 	while (!glfwWindowShouldClose(mainWindow))
@@ -214,10 +219,11 @@ int main()
 		if (curAngle >= 360) curAngle = 0.0f;
 		glm::mat4 model;
 
-		//model = glm::translate(model, glm::vec3(triOffset, 0, 0));
+		model = glm::translate(model, glm::vec3(0, triOffset, -2.50f));
 		model = glm::rotate(model, curAngle * toRad , glm::vec3(0, 1, 0));
 		model = glm::scale(model, glm::vec3(0.4, 0.4, 1));
 		glUniformMatrix4fv(uniformModel, 1, GL_FALSE, glm::value_ptr(model));
+		glUniformMatrix4fv(uniformProjection, 1, GL_FALSE, glm::value_ptr(projection));
 		//glUniform1f(uniformXMove, triOffset);
 
 		glBindVertexArray(VAO);
